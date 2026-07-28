@@ -1,94 +1,207 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <!-- Required meta tags -->
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>LIAM KEANE // Software Engineer</title>
     <meta
-      name="viewport"
-      content="width=device-width, initial-scale=1, shrink-to-fit=no"
+      name="description"
+      content="Liam Keane — software engineer building VR, computer vision, and commercial products. Portfolio of Draoi, WhatsThatBike, Patchworks, and IconForge."
     />
-
-    <!-- Bootstrap CSS -->
-    <link
-      rel="stylesheet"
-      href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
-      integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh"
-      crossorigin="anonymous"
+    <meta name="theme-color" content="#030609" />
+    <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
+    <meta property="og:title" content="LIAM KEANE // Software Engineer" />
+    <meta
+      property="og:description"
+      content="Software engineer. I build things that glow — VR, computer vision, and the odd commercial product."
     />
-    <link rel="stylesheet" href="css/homepage.css" />
-
-    <!-- Roboto Font -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Roboto:wght@100&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@400;500;600&display=swap"
       rel="stylesheet"
     />
-
-    <title>Liam K. -- Github Pages</title>
+    <link rel="stylesheet" href="./css/style.css" />
   </head>
-
   <body>
-    <!-- Spacer -->
-    <div style="width: 100%; height: 50px"></div>
+    <canvas id="bg-canvas" aria-hidden="true"></canvas>
 
-    <!-- Title Text -->
-    <div class="home-title">
-      <h1>Yo!</h1>
-      <hr />
-      <h2>Welcome to my site</h2>
-      <hr />
-      <a href="./LiamKeaneCV.pdf"><h3>Take a look at my CV</h3></a>
+    <div class="fx" aria-hidden="true">
+      <div class="fx-vignette"></div>
+      <div class="fx-roll"></div>
+      <div class="fx-dip"></div>
     </div>
 
-    <div class="home-items container">
-      <div class="row home-items-row">
-        <div class="col-sm">
-          <a href="http://www.get-peek.com">
-            <div class="home-items-content">
-              <!-- Peek -->
-              <img src="resources/images/peek.png" />
-              <h1>Peek</h1>
-              <!-- <h2>Peek</h2> -->
-            </div>
+    <div id="boot-overlay" aria-hidden="true">
+      <div class="boot-scanlines"></div>
+      <div class="boot-crt"></div>
+      <div class="boot-glyph">▮</div>
+      <div class="boot-sweep"></div>
+      <div class="boot-flare"></div>
+    </div>
+
+    <main id="app" data-booting>
+      <section id="hero">
+        <div class="hero-scrim" aria-hidden="true"></div>
+        <div class="hero-core">
+          <div class="hero-rule hero-rule--top" data-flicker>
+            <span class="rule-line"></span>
+            <span class="rule-tick"></span>
+            <span class="rule-line"></span>
+          </div>
+          <h1 id="hero-title" class="neon-title" aria-label="LIAM KEANE">
+            <span class="l" aria-hidden="true">L</span><span class="l" aria-hidden="true">I</span><span class="l" aria-hidden="true">A</span><span class="l" aria-hidden="true">M</span><span class="l l-space" aria-hidden="true">&nbsp;</span><span class="l" aria-hidden="true">K</span><span class="l" aria-hidden="true">E</span><span class="l" aria-hidden="true">A</span><span class="l" aria-hidden="true">N</span><span class="l" aria-hidden="true">E</span>
+          </h1>
+          <div class="hero-rule hero-rule--bottom" data-flicker>
+            <span class="rule-line"></span>
+            <span class="rule-node"></span>
+            <span class="rule-line"></span>
+          </div>
+          <p id="hero-tagline">
+            Software engineer. I build things that glow — VR, computer vision,
+            and the odd commercial product.
+          </p>
+          <a id="cv-btn" href="./LiamKeaneCV.pdf" target="_blank" rel="noopener">VIEW CV</a>
+        </div>
+        <div class="scroll-hint" aria-hidden="true">
+          <span class="scroll-hint-line"></span>
+          <span class="scroll-hint-chevron">⌄</span>
+        </div>
+      </section>
+
+      <section id="projects">
+        <h2 class="section-title" data-flicker>// PROGRAMS</h2>
+        <div class="project-grid">
+          <a
+            class="project-card project-card--orange"
+            href="https://store.steampowered.com/app/818070/Draoi/"
+            target="_blank"
+            rel="noopener"
+            style="--card-index: 0"
+          >
+            <span class="card-frame" aria-hidden="true"></span>
+            <span class="card-crt" aria-hidden="true"></span>
+            <span class="card-badge">STEAM</span>
+            <h3 class="card-title">DRAOI</h3>
+            <p class="card-desc">
+              Multiplayer VR magic battleground. Carve spells in the air with
+              your bare hands. Co-developed and shipped on Steam.
+            </p>
+            <span class="card-cta">ENTER →</span>
+          </a>
+          <a
+            class="project-card"
+            href="https://whatsthatbike.com"
+            target="_blank"
+            rel="noopener"
+            style="--card-index: 1"
+          >
+            <span class="card-frame" aria-hidden="true"></span>
+            <span class="card-crt" aria-hidden="true"></span>
+            <span class="card-badge">WEB APP</span>
+            <h3 class="card-title">WHATSTHATBIKE</h3>
+            <p class="card-desc">
+              Snap a photo of any motorbike and let AI identify it.
+            </p>
+            <span class="card-cta">ENTER →</span>
+          </a>
+          <a
+            class="project-card"
+            href="https://patchworks.club"
+            target="_blank"
+            rel="noopener"
+            style="--card-index: 2"
+          >
+            <span class="card-frame" aria-hidden="true"></span>
+            <span class="card-crt" aria-hidden="true"></span>
+            <span class="card-badge">WEB APP</span>
+            <h3 class="card-title">PATCHWORKS</h3>
+            <p class="card-desc">
+              Turn long videos into short, shareable clips in one click.
+            </p>
+            <span class="card-cta">ENTER →</span>
+          </a>
+          <a
+            class="project-card"
+            href="https://iconforge.ie"
+            target="_blank"
+            rel="noopener"
+            style="--card-index: 3"
+          >
+            <span class="card-frame" aria-hidden="true"></span>
+            <span class="card-crt" aria-hidden="true"></span>
+            <span class="card-badge">WEB APP</span>
+            <h3 class="card-title">ICONFORGE</h3>
+            <p class="card-desc">
+              Forge crisp, production-ready icons in seconds.
+            </p>
+            <span class="card-cta">ENTER →</span>
           </a>
         </div>
-        <div class="col-sm">
-          <a href="http://www.draoi.ie">
-            <div class="home-items-content">
-              <!-- Draoi -->
-              <img src="resources/images/draoi.jpg" />
-              <h1>Draoi</h1>
-            </div>
-          </a>
+      </section>
+
+      <footer id="footer">
+        <div class="footer-rule" aria-hidden="true">
+          <span class="rule-line"></span>
+          <span class="rule-node"></span>
+          <span class="rule-line"></span>
         </div>
-        <div class="col-sm">
-          <a href="https://www.github.com/keaneo/Scrubtitles">
-            <div class="home-items-content">
-              <!-- Scrubtitles -->
-              <img src="resources/images/Github.png" />
-              <h1>Scrubtitles</h1>
-            </div>
-          </a>
-        </div>
-      </div>
-    </div>    
-    <!-- Optional JavaScript -->
-    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
-    <script
-      src="https://code.jquery.com/jquery-3.4.1.slim.min.js"
-      integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n"
-      crossorigin="anonymous"
-    ></script>
-    <script
-      src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
-      integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
-      crossorigin="anonymous"
-    ></script>
-    <script
-      src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"
-      integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6"
-      crossorigin="anonymous"
-    ></script>
+        <p class="easter-egg">
+          P.S. — my most-starred repo is
+          <a
+            href="https://github.com/Keaneo/Scrubtitles"
+            target="_blank"
+            rel="noopener"
+            >Scrubtitles</a
+          >. Fifty stars. On GitHub, that's basically going viral.
+        </p>
+        <nav class="contact-links" aria-label="Contact links">
+          <a href="https://github.com/Keaneo" target="_blank" rel="noopener"
+            >GitHub</a
+          >
+          <a
+            href="https://linkedin.com/in/liam-keane"
+            target="_blank"
+            rel="noopener"
+            >LinkedIn</a
+          >
+          <a href="mailto:liamkeane6@gmail.com">Email</a>
+        </nav>
+        <p class="end-of-line" data-flicker>END OF LINE</p>
+      </footer>
+    </main>
+
+    <button
+      id="sound-toggle"
+      type="button"
+      aria-pressed="false"
+      aria-label="Toggle sound"
+    >
+      <svg
+        class="sound-icon"
+        viewBox="0 0 24 24"
+        width="18"
+        height="18"
+        aria-hidden="true"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      >
+        <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" />
+        <line class="sound-off-line" x1="23" y1="9" x2="17" y2="15" />
+        <line class="sound-off-line" x1="17" y1="9" x2="23" y2="15" />
+      </svg>
+    </button>
+
+    <script type="importmap">
+      {
+        "imports": {
+          "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js"
+        }
+      }
+    </script>
+    <script type="module" src="./js/main.js"></script>
   </body>
 </html>
