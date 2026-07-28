@@ -1,0 +1,975 @@
+/* ==========================================================================
+   TRON LEGACY PORTFOLIO — Design Tokens
+   ========================================================================== */
+
+:root {
+  --bg: #030609;
+  --cyan: #00e5ff;
+  --cyan-soft: #7dfdfe;
+  --cyan-dim: rgba(0, 229, 255, 0.35);
+  --cyan-glow: rgba(0, 229, 255, 0.55);
+  --cyan-glow-deep: rgba(0, 120, 140, 0.45);
+  --orange: #ff9a1f;
+  --orange-soft: #ffc46a;
+  --orange-dim: rgba(255, 154, 31, 0.35);
+  --orange-glow: rgba(255, 154, 31, 0.55);
+  --text: #d8f4ff;
+  --text-dim: rgba(216, 244, 255, 0.45);
+  --text-muted: rgba(216, 244, 255, 0.28);
+  --white-hot: #eafdff;
+  --panel-bg: rgba(3, 10, 18, 0.72);
+  --font-display: "Orbitron", sans-serif;
+  --font-body: "Rajdhani", sans-serif;
+  --section-pad: clamp(1rem, 5vw, 3rem);
+  --neon-core: 0 0 2px #fff, 0 0 6px var(--cyan-soft), 0 0 18px var(--cyan);
+  --neon-halo: 0 0 36px var(--cyan-glow), 0 0 64px var(--cyan-glow-deep);
+}
+
+/* ==========================================================================
+   Reset & Base
+   ========================================================================== */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  min-height: 100svh;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-body);
+  font-weight: 400;
+  font-size: 1.05rem;
+  line-height: 1.55;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+img,
+svg {
+  display: block;
+  max-width: 100%;
+}
+
+/* ==========================================================================
+   WebGL Canvas
+   ========================================================================== */
+
+#bg-canvas {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* ==========================================================================
+   CRT Scanline Overlay (ambient, post-boot)
+   ========================================================================== */
+
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  pointer-events: none;
+  background: repeating-linear-gradient(
+    to bottom,
+    transparent 0px,
+    transparent 2px,
+    rgba(0, 0, 0, 0.18) 2px,
+    rgba(0, 0, 0, 0.18) 4px
+  );
+  opacity: 0.04;
+}
+
+/* ==========================================================================
+   No-WebGL Fallback
+   ========================================================================== */
+
+html.no-webgl #bg-canvas {
+  display: none;
+}
+
+html.no-webgl body {
+  background: radial-gradient(
+    ellipse 120% 80% at 50% 100%,
+    rgba(0, 60, 90, 0.35) 0%,
+    var(--bg) 55%
+  );
+}
+
+html.no-webgl body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    repeating-linear-gradient(
+      90deg,
+      transparent 0,
+      transparent 39px,
+      rgba(0, 229, 255, 0.06) 39px,
+      rgba(0, 229, 255, 0.06) 40px
+    ),
+    repeating-linear-gradient(
+      0deg,
+      transparent 0,
+      transparent 39px,
+      rgba(0, 229, 255, 0.04) 39px,
+      rgba(0, 229, 255, 0.04) 40px
+    );
+  transform: perspective(500px) rotateX(62deg) scale(2.2);
+  transform-origin: 50% 100%;
+  opacity: 0.7;
+}
+
+/* ==========================================================================
+   Boot Overlay
+   ========================================================================== */
+
+#boot-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  background: #000;
+  pointer-events: auto;
+  transition: opacity 0.6s ease, visibility 0.6s ease;
+}
+
+#boot-overlay.done {
+  opacity: 0;
+  pointer-events: none;
+  visibility: hidden;
+}
+
+.boot-scanlines {
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    to bottom,
+    transparent 0px,
+    transparent 2px,
+    rgba(0, 229, 255, 0.04) 2px,
+    rgba(0, 229, 255, 0.04) 4px
+  );
+  opacity: 0.6;
+}
+
+.boot-glyph {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  color: var(--cyan-soft);
+  text-shadow:
+    0 0 4px #fff,
+    0 0 12px var(--cyan),
+    0 0 24px var(--cyan-glow);
+  animation: glyph-flicker 0.12s step-end infinite;
+  transition: opacity 0.3s ease;
+}
+
+.boot-sweep {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: -2px;
+  height: 3px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.9) 45%,
+    var(--cyan-soft) 50%,
+    rgba(255, 255, 255, 0.9) 55%,
+    transparent 100%
+  );
+  box-shadow:
+    0 0 6px #fff,
+    0 0 20px var(--cyan),
+    0 0 48px var(--cyan-glow);
+  opacity: 0;
+  transform: translateY(-100%);
+}
+
+/* Boot stage: power surge */
+body[data-stage="2"] #boot-overlay {
+  animation: overlay-flicker 0.8s ease forwards;
+}
+
+body[data-stage="2"] .boot-glyph {
+  opacity: 0;
+}
+
+body[data-stage="2"] .boot-sweep {
+  animation: boot-sweep 0.8s ease-in-out forwards;
+}
+
+body[data-stage="3"] #boot-overlay,
+body[data-stage="4"] #boot-overlay {
+  background: transparent;
+  pointer-events: none;
+}
+
+body[data-stage="3"] .boot-scanlines,
+body[data-stage="4"] .boot-scanlines {
+  opacity: 0;
+}
+
+/* ==========================================================================
+   Main App Shell
+   ========================================================================== */
+
+#app {
+  position: relative;
+  z-index: 1;
+}
+
+/* ==========================================================================
+   Boot Sequence — Content Visibility
+   ========================================================================== */
+
+#app[data-booting] #hero-title .l,
+#app[data-booting] #hero-tagline,
+#app[data-booting] #cv-btn,
+#app[data-booting] .project-card,
+#app[data-booting] #footer {
+  opacity: 0;
+}
+
+/* Skip path: boot complete */
+#app:not([data-booting]) #hero-title .l,
+#app:not([data-booting]) #hero-tagline,
+#app:not([data-booting]) #cv-btn,
+#app:not([data-booting]) .project-card,
+#app:not([data-booting]) #footer,
+#app:not([data-booting]) .scroll-hint {
+  opacity: 1 !important;
+  animation: none !important;
+  transition: none !important;
+}
+
+#app:not([data-booting]) #boot-overlay {
+  display: none;
+}
+
+/* Stage 3 — title ignition + tagline */
+body[data-stage="3"] #app[data-booting] #hero-title .l,
+body[data-stage="4"] #app[data-booting] #hero-title .l {
+  animation: letter-ignite 0.85s var(--ignite-delay, 0s) both;
+}
+
+body[data-stage="3"] #app[data-booting] #hero-tagline,
+body[data-stage="4"] #app[data-booting] #hero-tagline {
+  opacity: 1;
+  transition: opacity 0.7s ease 0.6s;
+}
+
+body[data-stage="3"] #app[data-booting] .scroll-hint,
+body[data-stage="4"] #app[data-booting] .scroll-hint {
+  opacity: 0.6;
+  transition: opacity 0.8s ease 1.2s;
+}
+
+/* Stage 4 — CV, cards, footer */
+body[data-stage="4"] #app[data-booting] #cv-btn {
+  animation: btn-ignite 0.6s ease both;
+}
+
+body[data-stage="4"] #app[data-booting] .project-card {
+  animation: card-power-on 0.55s calc(var(--card-index) * 120ms) both;
+}
+
+body[data-stage="4"] #app[data-booting] #footer {
+  opacity: 1;
+  transition: opacity 0.7s ease 0.7s;
+}
+
+/* Post-boot ambient flicker on title */
+#app:not([data-booting]) #hero-title .l {
+  animation: neon-idle-flicker 9s ease-in-out infinite;
+}
+
+/* ==========================================================================
+   Hero Section
+   ========================================================================== */
+
+#hero {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100svh;
+  padding: 4rem var(--section-pad) 5rem;
+  text-align: center;
+  position: relative;
+}
+
+.neon-title {
+  margin: 0 0 1.5rem;
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-size: clamp(2.2rem, 10vw, 6rem);
+  letter-spacing: 0.12em;
+  line-height: 1.1;
+  text-transform: uppercase;
+}
+
+.neon-title .l {
+  display: inline-block;
+  color: var(--white-hot);
+  text-shadow:
+    0 0 2px #fff,
+    0 0 8px var(--cyan-soft),
+    0 0 20px var(--cyan),
+    0 0 40px var(--cyan-glow),
+    0 0 72px var(--cyan-glow-deep);
+}
+
+.neon-title .l-space {
+  width: 0.35em;
+}
+
+#hero-tagline {
+  margin: 0 0 2.5rem;
+  max-width: 34rem;
+  font-size: clamp(1rem, 2.8vw, 1.25rem);
+  font-weight: 500;
+  color: var(--text-dim);
+  letter-spacing: 0.02em;
+}
+
+/* ==========================================================================
+   CV Button
+   ========================================================================== */
+
+#cv-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  min-width: 160px;
+  padding: 0.85rem 2rem;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 0.8rem;
+  letter-spacing: 0.18em;
+  color: var(--white-hot);
+  background: rgba(0, 229, 255, 0.04);
+  border: 1px solid rgba(125, 253, 254, 0.6);
+  clip-path: polygon(
+    12px 0,
+    100% 0,
+    100% calc(100% - 12px),
+    calc(100% - 12px) 100%,
+    0 100%,
+    0 12px
+  );
+  box-shadow:
+    inset 0 0 8px rgba(255, 255, 255, 0.12),
+    0 0 8px rgba(255, 255, 255, 0.25),
+    0 0 16px var(--cyan-glow),
+    0 0 32px var(--cyan-glow-deep);
+  transition:
+    transform 0.25s ease,
+    box-shadow 0.25s ease,
+    border-color 0.25s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+#cv-btn::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    105deg,
+    transparent 38%,
+    rgba(255, 255, 255, 0.18) 50%,
+    transparent 62%
+  );
+  transform: translateX(-120%);
+  animation: btn-shimmer 4s ease-in-out infinite;
+}
+
+#cv-btn:hover,
+#cv-btn:focus-visible {
+  transform: scale(1.04);
+  border-color: var(--cyan-soft);
+  box-shadow:
+    inset 0 0 12px rgba(255, 255, 255, 0.2),
+    0 0 12px rgba(255, 255, 255, 0.4),
+    0 0 24px var(--cyan),
+    0 0 48px var(--cyan-glow);
+  outline: none;
+}
+
+/* ==========================================================================
+   Scroll Hint
+   ========================================================================== */
+
+.scroll-hint {
+  position: absolute;
+  bottom: 2rem;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.35rem;
+  opacity: 0;
+}
+
+.scroll-hint-line {
+  display: block;
+  width: 1px;
+  height: 2rem;
+  background: linear-gradient(to bottom, var(--cyan-dim), transparent);
+}
+
+.scroll-hint-chevron {
+  font-size: 1.1rem;
+  color: var(--cyan-dim);
+  animation: scroll-pulse 2.4s ease-in-out infinite;
+}
+
+#app:not([data-booting]) .scroll-hint {
+  opacity: 0.6;
+}
+
+/* ==========================================================================
+   Projects Section
+   ========================================================================== */
+
+#projects {
+  padding: 5rem var(--section-pad) 4rem;
+}
+
+.section-title {
+  margin: 0 0 2.5rem;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(0.85rem, 2vw, 1rem);
+  letter-spacing: 0.22em;
+  color: var(--cyan-dim);
+  text-shadow: 0 0 12px var(--cyan-glow-deep);
+}
+
+.project-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.25rem;
+  perspective: 900px;
+}
+
+@media (min-width: 700px) {
+  .project-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
+  }
+}
+
+/* ==========================================================================
+   Project Cards
+   ========================================================================== */
+
+.project-card {
+  --accent: var(--cyan);
+  --accent-soft: var(--cyan-soft);
+  --accent-dim: var(--cyan-dim);
+  --accent-glow: var(--cyan-glow);
+  --accent-glow-deep: var(--cyan-glow-deep);
+
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+  padding: 1.5rem 1.35rem 1.25rem;
+  min-height: 44px;
+  background: var(--panel-bg);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--accent-dim);
+  clip-path: polygon(
+    0 0,
+    calc(100% - 16px) 0,
+    100% 16px,
+    100% 100%,
+    16px 100%,
+    0 calc(100% - 16px)
+  );
+  box-shadow:
+    inset 0 0 12px rgba(255, 255, 255, 0.04),
+    0 0 8px rgba(255, 255, 255, 0.08),
+    0 0 16px var(--accent-glow),
+    0 0 32px var(--accent-glow-deep);
+  transform: rotateX(var(--tilt-x, 0deg)) rotateY(var(--tilt-y, 0deg));
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.25s ease,
+    border-color 0.25s ease;
+  will-change: transform;
+}
+
+.project-card--orange {
+  --accent: var(--orange);
+  --accent-soft: var(--orange-soft);
+  --accent-dim: var(--orange-dim);
+  --accent-glow: var(--orange-glow);
+  --accent-glow-deep: rgba(180, 90, 10, 0.35);
+}
+
+.card-badge {
+  align-self: flex-start;
+  padding: 0.2rem 0.55rem;
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: 0.62rem;
+  letter-spacing: 0.16em;
+  color: var(--accent-soft);
+  border: 1px solid var(--accent-dim);
+  box-shadow:
+    inset 0 0 4px rgba(255, 255, 255, 0.1),
+    0 0 8px var(--accent-glow);
+}
+
+.card-title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(1rem, 2.5vw, 1.15rem);
+  letter-spacing: 0.1em;
+  color: var(--white-hot);
+  text-shadow:
+    0 0 2px #fff,
+    0 0 10px var(--accent-soft),
+    0 0 20px var(--accent);
+}
+
+.card-desc {
+  margin: 0;
+  flex: 1;
+  font-size: 0.98rem;
+  font-weight: 400;
+  color: var(--text-dim);
+  line-height: 1.45;
+}
+
+.card-cta {
+  margin-top: 0.5rem;
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: 0.72rem;
+  letter-spacing: 0.14em;
+  color: var(--accent-dim);
+  transition:
+    color 0.25s ease,
+    transform 0.25s ease,
+    text-shadow 0.25s ease;
+}
+
+@media (hover: hover) {
+  .project-card:hover {
+    transform: rotateX(var(--tilt-x, 0deg)) rotateY(var(--tilt-y, 0deg))
+      translateY(-4px);
+    border-color: var(--accent-soft);
+    box-shadow:
+      inset 0 0 16px rgba(255, 255, 255, 0.08),
+      0 0 12px rgba(255, 255, 255, 0.15),
+      0 0 24px var(--accent),
+      0 0 48px var(--accent-glow);
+  }
+
+  .project-card:hover .card-cta {
+    color: var(--accent-soft);
+    transform: translateX(4px);
+    text-shadow: 0 0 8px var(--accent-glow);
+  }
+}
+
+@media (hover: none) {
+  .project-card:active {
+    border-color: var(--accent-soft);
+    box-shadow:
+      inset 0 0 16px rgba(255, 255, 255, 0.1),
+      0 0 20px var(--accent),
+      0 0 40px var(--accent-glow);
+  }
+
+  .project-card:active .card-cta {
+    color: var(--accent-soft);
+    text-shadow: 0 0 8px var(--accent-glow);
+  }
+}
+
+/* ==========================================================================
+   Footer
+   ========================================================================== */
+
+#footer {
+  padding: 3rem var(--section-pad) 4rem;
+  text-align: center;
+}
+
+.easter-egg {
+  margin: 0 0 1.75rem;
+  max-width: 32rem;
+  margin-inline: auto;
+  font-size: 0.82rem;
+  font-weight: 400;
+  font-style: italic;
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+
+.easter-egg a {
+  color: var(--text-dim);
+  transition: color 0.2s ease, text-shadow 0.2s ease;
+}
+
+.easter-egg a:hover,
+.easter-egg a:focus-visible {
+  color: var(--cyan-soft);
+  text-shadow: 0 0 8px var(--cyan-glow);
+  outline: none;
+}
+
+.contact-links {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 1.25rem 2rem;
+  margin-bottom: 2rem;
+}
+
+.contact-links a {
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: 0.72rem;
+  letter-spacing: 0.14em;
+  color: var(--cyan-dim);
+  transition: color 0.2s ease, text-shadow 0.2s ease;
+}
+
+.contact-links a:hover,
+.contact-links a:focus-visible {
+  color: var(--cyan-soft);
+  text-shadow: 0 0 10px var(--cyan-glow);
+  outline: none;
+}
+
+.end-of-line {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: 0.6rem;
+  letter-spacing: 0.28em;
+  color: var(--text-muted);
+  opacity: 0.6;
+}
+
+/* ==========================================================================
+   Sound Toggle
+   ========================================================================== */
+
+#sound-toggle {
+  position: fixed;
+  bottom: 1.25rem;
+  right: 1.25rem;
+  z-index: 60;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 1px solid var(--cyan-dim);
+  border-radius: 50%;
+  background: rgba(3, 10, 18, 0.85);
+  color: var(--cyan-dim);
+  cursor: pointer;
+  clip-path: polygon(
+    30% 0,
+    70% 0,
+    100% 30%,
+    100% 70%,
+    70% 100%,
+    30% 100%,
+    0 70%,
+    0 30%
+  );
+  box-shadow:
+    inset 0 0 6px rgba(255, 255, 255, 0.06),
+    0 0 8px var(--cyan-glow-deep);
+  transition:
+    color 0.2s ease,
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+#sound-toggle:hover,
+#sound-toggle:focus-visible {
+  border-color: var(--cyan-soft);
+  color: var(--cyan-soft);
+  outline: none;
+}
+
+#sound-toggle[aria-pressed="true"] {
+  color: var(--white-hot);
+  border-color: var(--cyan-soft);
+  box-shadow:
+    inset 0 0 8px rgba(255, 255, 255, 0.15),
+    0 0 10px rgba(255, 255, 255, 0.2),
+    0 0 20px var(--cyan),
+    0 0 40px var(--cyan-glow);
+}
+
+#sound-toggle[aria-pressed="true"] .sound-off-line {
+  display: none;
+}
+
+/* ==========================================================================
+   Keyframe Animations
+   ========================================================================== */
+
+@keyframes glyph-flicker {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.35;
+  }
+}
+
+@keyframes overlay-flicker {
+  0% {
+    opacity: 1;
+  }
+  15% {
+    opacity: 0.3;
+  }
+  25% {
+    opacity: 0.9;
+  }
+  35% {
+    opacity: 0.2;
+  }
+  50% {
+    opacity: 0.85;
+  }
+  65% {
+    opacity: 0.15;
+  }
+  80% {
+    opacity: 0.5;
+  }
+  100% {
+    opacity: 0;
+    background: transparent;
+  }
+}
+
+@keyframes boot-sweep {
+  0% {
+    opacity: 0;
+    top: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0.6;
+    top: 100%;
+  }
+}
+
+@keyframes letter-ignite {
+  0% {
+    opacity: 0;
+    text-shadow: none;
+  }
+  8% {
+    opacity: 0.25;
+  }
+  12% {
+    opacity: 1;
+    text-shadow:
+      0 0 2px #fff,
+      0 0 8px var(--cyan-soft),
+      0 0 20px var(--cyan);
+  }
+  20% {
+    opacity: 0.35;
+  }
+  28% {
+    opacity: 0.95;
+  }
+  36% {
+    opacity: 0.45;
+  }
+  44% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 1;
+    text-shadow:
+      0 0 2px #fff,
+      0 0 8px var(--cyan-soft),
+      0 0 20px var(--cyan),
+      0 0 40px var(--cyan-glow),
+      0 0 72px var(--cyan-glow-deep);
+  }
+}
+
+@keyframes btn-ignite {
+  0% {
+    opacity: 0;
+    box-shadow: none;
+  }
+  20% {
+    opacity: 0.4;
+  }
+  35% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+  65% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 1;
+    box-shadow:
+      inset 0 0 8px rgba(255, 255, 255, 0.12),
+      0 0 8px rgba(255, 255, 255, 0.25),
+      0 0 16px var(--cyan-glow),
+      0 0 32px var(--cyan-glow-deep);
+  }
+}
+
+@keyframes card-power-on {
+  0% {
+    opacity: 0;
+    box-shadow: none;
+  }
+  15% {
+    opacity: 0.3;
+  }
+  30% {
+    opacity: 0.9;
+  }
+  45% {
+    opacity: 0.4;
+  }
+  60% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes neon-idle-flicker {
+  0%,
+  100% {
+    opacity: 1;
+    filter: brightness(1);
+  }
+  37% {
+    opacity: 0.96;
+    filter: brightness(0.92);
+  }
+  38% {
+    opacity: 1;
+    filter: brightness(1);
+  }
+  61% {
+    opacity: 0.97;
+    filter: brightness(0.94);
+  }
+  62% {
+    opacity: 1;
+    filter: brightness(1);
+  }
+  84% {
+    opacity: 0.95;
+    filter: brightness(0.9);
+  }
+  85% {
+    opacity: 1;
+    filter: brightness(1);
+  }
+}
+
+@keyframes btn-shimmer {
+  0%,
+  70%,
+  100% {
+    transform: translateX(-120%);
+  }
+  85% {
+    transform: translateX(120%);
+  }
+}
+
+@keyframes scroll-pulse {
+  0%,
+  100% {
+    opacity: 0.35;
+    transform: translateY(0);
+  }
+  50% {
+    opacity: 0.8;
+    transform: translateY(4px);
+  }
+}
+
+/* ==========================================================================
+   Reduced Motion
+   ========================================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+
+  #boot-overlay {
+    display: none !important;
+  }
+
+  #app[data-booting] #hero-title .l,
+  #app[data-booting] #hero-tagline,
+  #app[data-booting] #cv-btn,
+  #app[data-booting] .project-card,
+  #app[data-booting] #footer,
+  #app[data-booting] .scroll-hint {
+    opacity: 1 !important;
+  }
+
+  html {
+    scroll-behavior: auto;
+  }
+}
