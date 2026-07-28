@@ -168,6 +168,7 @@ html.no-webgl body::before {
     rgba(0, 229, 255, 0.04) 4px
   );
   opacity: 0.6;
+  transition: opacity 0.4s ease;
 }
 
 .boot-glyph {
@@ -253,20 +254,16 @@ body[data-stage="4"] .boot-scanlines {
   opacity: 0;
 }
 
-/* Skip path: boot complete */
+/* Skip path: boot complete. The boot animations only match under
+   [data-booting] selectors, so restoring opacity is all that's needed —
+   hover transitions and idle animations must keep working. */
 #app:not([data-booting]) #hero-title .l,
 #app:not([data-booting]) #hero-tagline,
 #app:not([data-booting]) #cv-btn,
 #app:not([data-booting]) .project-card,
 #app:not([data-booting]) #footer,
 #app:not([data-booting]) .scroll-hint {
-  opacity: 1 !important;
-  animation: none !important;
-  transition: none !important;
-}
-
-#app:not([data-booting]) #boot-overlay {
-  display: none;
+  opacity: 1;
 }
 
 /* Stage 3 — title ignition + tagline */

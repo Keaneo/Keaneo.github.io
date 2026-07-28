@@ -407,10 +407,9 @@ export function initScene(canvas) {
     const ignHorizon = ignitionEnvelope(igniteT, 'horizon');
     const ignGrid = ignitionEnvelope(igniteT, 'grid');
 
-    applyHorizonBrightness(ignHorizon);
-
     if (reducedMotion) {
       grid.group.position.z = 0;
+      applyHorizonBrightness(Math.max(ignHorizon, ignitedAt >= 0 ? 1 : 0));
       applyGridBrightness(Math.max(ignGrid, ignitedAt >= 0 ? 1 : 0), elapsed);
       updateCamera(elapsed);
       renderer.render(scene, camera);
@@ -420,6 +419,7 @@ export function initScene(canvas) {
     scrollTime += delta;
     grid.group.position.z = (scrollTime * SCROLL_SPEED) % CELL_SIZE;
 
+    applyHorizonBrightness(ignHorizon);
     applyGridBrightness(ignGrid, elapsed);
     updateCamera(elapsed);
 
