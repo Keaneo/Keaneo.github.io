@@ -26,22 +26,43 @@
   <body>
     <canvas id="bg-canvas" aria-hidden="true"></canvas>
 
+    <div class="fx" aria-hidden="true">
+      <div class="fx-vignette"></div>
+      <div class="fx-roll"></div>
+      <div class="fx-dip"></div>
+    </div>
+
     <div id="boot-overlay" aria-hidden="true">
       <div class="boot-scanlines"></div>
+      <div class="boot-crt"></div>
       <div class="boot-glyph">▮</div>
       <div class="boot-sweep"></div>
+      <div class="boot-flare"></div>
     </div>
 
     <main id="app" data-booting>
       <section id="hero">
-        <h1 id="hero-title" class="neon-title" aria-label="LIAM KEANE">
-          <span class="l" aria-hidden="true">L</span><span class="l" aria-hidden="true">I</span><span class="l" aria-hidden="true">A</span><span class="l" aria-hidden="true">M</span><span class="l l-space" aria-hidden="true">&nbsp;</span><span class="l" aria-hidden="true">K</span><span class="l" aria-hidden="true">E</span><span class="l" aria-hidden="true">A</span><span class="l" aria-hidden="true">N</span><span class="l" aria-hidden="true">E</span>
-        </h1>
-        <p id="hero-tagline">
-          Software engineer. I build things that glow — VR, computer vision,
-          and the odd commercial product.
-        </p>
-        <a id="cv-btn" href="./LiamKeaneCV.pdf" target="_blank" rel="noopener">VIEW CV</a>
+        <div class="hero-scrim" aria-hidden="true"></div>
+        <div class="hero-core">
+          <div class="hero-rule hero-rule--top" data-flicker>
+            <span class="rule-line"></span>
+            <span class="rule-tick"></span>
+            <span class="rule-line"></span>
+          </div>
+          <h1 id="hero-title" class="neon-title" aria-label="LIAM KEANE">
+            <span class="l" aria-hidden="true">L</span><span class="l" aria-hidden="true">I</span><span class="l" aria-hidden="true">A</span><span class="l" aria-hidden="true">M</span><span class="l l-space" aria-hidden="true">&nbsp;</span><span class="l" aria-hidden="true">K</span><span class="l" aria-hidden="true">E</span><span class="l" aria-hidden="true">A</span><span class="l" aria-hidden="true">N</span><span class="l" aria-hidden="true">E</span>
+          </h1>
+          <div class="hero-rule hero-rule--bottom" data-flicker>
+            <span class="rule-line"></span>
+            <span class="rule-node"></span>
+            <span class="rule-line"></span>
+          </div>
+          <p id="hero-tagline">
+            Software engineer. I build things that glow — VR, computer vision,
+            and the odd commercial product.
+          </p>
+          <a id="cv-btn" href="./LiamKeaneCV.pdf" target="_blank" rel="noopener">VIEW CV</a>
+        </div>
         <div class="scroll-hint" aria-hidden="true">
           <span class="scroll-hint-line"></span>
           <span class="scroll-hint-chevron">⌄</span>
@@ -49,7 +70,7 @@
       </section>
 
       <section id="projects">
-        <h2 class="section-title">// PROGRAMS</h2>
+        <h2 class="section-title" data-flicker>// PROGRAMS</h2>
         <div class="project-grid">
           <a
             class="project-card project-card--orange"
@@ -58,6 +79,8 @@
             rel="noopener"
             style="--card-index: 0"
           >
+            <span class="card-frame" aria-hidden="true"></span>
+            <span class="card-crt" aria-hidden="true"></span>
             <span class="card-badge">STEAM</span>
             <h3 class="card-title">DRAOI</h3>
             <p class="card-desc">
@@ -73,6 +96,8 @@
             rel="noopener"
             style="--card-index: 1"
           >
+            <span class="card-frame" aria-hidden="true"></span>
+            <span class="card-crt" aria-hidden="true"></span>
             <span class="card-badge">WEB APP</span>
             <h3 class="card-title">WHATSTHATBIKE</h3>
             <p class="card-desc">
@@ -87,6 +112,8 @@
             rel="noopener"
             style="--card-index: 2"
           >
+            <span class="card-frame" aria-hidden="true"></span>
+            <span class="card-crt" aria-hidden="true"></span>
             <span class="card-badge">WEB APP</span>
             <h3 class="card-title">PATCHWORKS</h3>
             <p class="card-desc">
@@ -101,6 +128,8 @@
             rel="noopener"
             style="--card-index: 3"
           >
+            <span class="card-frame" aria-hidden="true"></span>
+            <span class="card-crt" aria-hidden="true"></span>
             <span class="card-badge">WEB APP</span>
             <h3 class="card-title">ICONFORGE</h3>
             <p class="card-desc">
@@ -112,6 +141,11 @@
       </section>
 
       <footer id="footer">
+        <div class="footer-rule" aria-hidden="true">
+          <span class="rule-line"></span>
+          <span class="rule-node"></span>
+          <span class="rule-line"></span>
+        </div>
         <p class="easter-egg">
           P.S. — my most-starred repo is
           <a
@@ -133,7 +167,7 @@
           >
           <a href="mailto:liamkeane6@gmail.com">Email</a>
         </nav>
-        <p class="end-of-line">END OF LINE</p>
+        <p class="end-of-line" data-flicker>END OF LINE</p>
       </footer>
     </main>
 

@@ -26,6 +26,8 @@ function shuffleIndices(length) {
   return indices;
 }
 
+const IGNITE_VARIANTS = ['letter-ignite-a', 'letter-ignite-b', 'letter-ignite-c'];
+
 function igniteLetters() {
   const letters = document.querySelectorAll('#hero-title .l');
   if (!letters.length) return;
@@ -33,9 +35,74 @@ function igniteLetters() {
   const order = shuffleIndices(letters.length);
   letters.forEach((letter, index) => {
     const position = order.indexOf(index);
-    const delayMs = position * 90 + Math.random() * 40;
+    const delayMs = position * 78 + Math.random() * 46;
     letter.style.setProperty('--ignite-delay', `${delayMs}ms`);
+    letter.style.setProperty(
+      '--ignite-name',
+      IGNITE_VARIANTS[Math.floor(Math.random() * IGNITE_VARIANTS.length)],
+    );
   });
+}
+
+/**
+ * Desynchronise every idle animation on the page. Without this the neon reads
+ * as a single looping shader; with it, nothing ever pulses in lockstep.
+ */
+function setupAmbientJitter() {
+  if (REDUCED) return;
+
+  const jitter = (el, baseSeconds, spread) => {
+    const dur = baseSeconds + (Math.random() * 2 - 1) * spread;
+    el.style.setProperty('--flk-dur', `${dur.toFixed(2)}s`);
+    el.style.setProperty('--flk-delay', `${-(Math.random() * dur).toFixed(2)}s`);
+  };
+
+  document
+    .querySelectorAll('#hero-title .l')
+    .forEach((el) => jitter(el, 21, 8));
+  document
+    .querySelectorAll('[data-flicker]')
+    .forEach((el) => jitter(el, 26, 9));
+
+  const roll = document.querySelector('.fx-roll');
+  if (roll) roll.style.setProperty('--flk-delay', `${-(Math.random() * 11).toFixed(2)}s`);
+
+  const dip = document.querySelector('.fx-dip');
+  if (dip) dip.style.setProperty('--flk-delay', `${-(Math.random() * 19).toFixed(2)}s`);
+
+  const cv = document.getElementById('cv-btn');
+  if (cv) cv.style.setProperty('--flk-delay', `${-(Math.random() * 5.5).toFixed(2)}s`);
+
+  const chevron = document.querySelector('.scroll-hint-chevron');
+  if (chevron) {
+    chevron.style.setProperty('--flk-delay', `${-(Math.random() * 2.6).toFixed(2)}s`);
+  }
+}
+
+/** Very occasionally, one letter buzzes like a failing tube, then recovers. */
+function setupTubeBuzz() {
+  if (REDUCED) return;
+
+  const letters = [...document.querySelectorAll('#hero-title .l')].filter(
+    (el) => !el.classList.contains('l-space'),
+  );
+  if (!letters.length) return;
+
+  const schedule = () => {
+    const wait = 9000 + Math.random() * 22000;
+    window.setTimeout(() => {
+      if (!document.hidden && !app?.hasAttribute('data-booting')) {
+        const letter = letters[Math.floor(Math.random() * letters.length)];
+        const dur = 320 + Math.random() * 420;
+        letter.style.setProperty('--buzz-dur', `${Math.round(dur)}ms`);
+        letter.classList.add('buzz');
+        window.setTimeout(() => letter.classList.remove('buzz'), dur + 40);
+      }
+      schedule();
+    }, wait);
+  };
+
+  schedule();
 }
 
 function cancelBootTimeouts() {
@@ -106,12 +173,12 @@ function runBootSequence() {
     setTimeout(() => {
       document.body.dataset.stage = '2';
       ensureGridIgnited();
-    }, 400),
+    }, 420),
   );
 
-  scheduleStage(3, 1200);
-  scheduleStage(4, 2200);
-  bootTimeouts.push(setTimeout(finishBoot, 3000));
+  scheduleStage(3, 1180);
+  scheduleStage(4, 2150);
+  bootTimeouts.push(setTimeout(finishBoot, 3200));
 }
 
 function setupTilt() {
@@ -335,7 +402,9 @@ function setupSound() {
   }
 }
 
+setupAmbientJitter();
 runBootSequence();
 setupTilt();
 setupScrollHint();
 setupSound();
+setupTubeBuzz();
